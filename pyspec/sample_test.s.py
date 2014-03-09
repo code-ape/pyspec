@@ -1,4 +1,4 @@
-from pyspec import end, it, print_tree
+from pyspec import end, it
 
 
 class Burger():
@@ -14,18 +14,17 @@ class Burger():
 
 def test_burger():
     def apply_ketchup():
-        def with_ketchup():
-            def before():
-                burger = Burger(ketchup = True)
-                burger.apply_ketchup()
+        it("with ketchup")
+        def before():
+            burger = Burger(ketchup = True)
+            burger.apply_ketchup()
 
-                it("sets the ketchup flag to true")
-                def spec():
-                    assert burger.has_ketchup_on_it() == True 
-                end(spec)
-            
-            end(before)
-        end(with_ketchup)
+            it("sets the ketchup flag to true")
+            def spec():
+                assert burger.has_ketchup_on_it() == True 
+            end(spec)
+        
+        end(before)
         
         def without_ketchup():
             def before():
@@ -42,22 +41,5 @@ def test_burger():
     end(apply_ketchup)
 end(test_burger)
 
-print_tree()
 
-expected_tree = [
-    {'name': 'test_burger', "tree": [
-        {'name': 'apply_ketchup', "tree": [
-            {'name': 'with_ketchup', "tree": [
-                {'name': 'before'},
-                {'description': 'sets the ketchup flag to true', 
-                 'name': 'spec'},
-            ]},
-            {'name': 'without_ketchup', "tree": [
-                {'name': 'before'},
-                {'description': 'sets the ketchup flag to false', 
-                 'name': 'spec'},
-            ]}
-        ]}
-    ]}
-]
 

@@ -1,4 +1,7 @@
 
+
+from test_runner import run_tests
+
 spec_list = []
 stack = []
 
@@ -36,7 +39,10 @@ def end(func):
 
     del stack[index] 
     if stack == []:
-        run_tests()
+        print("")
+        print_tree_condensed()
+        print("")
+        run_tests(spec_list)
 
 def get_item(list, key, value):
     for i in list:
@@ -103,32 +109,22 @@ def print_tree(level = 0, specs = spec_list):
         if "description" in spec:
             print "  "*level + spec["description"]
             if "name" in spec:
-                print "  "*(level+1) + "\\" + spec["name"]
+                print "  "*(level+1) + "\\" + spec["name"].replace("_", " ")
         else:
-            print "  "*level + spec["name"]
+            print "  "*level + spec["name"].replace("_", " ")
         if "tree" in spec:
             print_tree(level+1, spec["tree"])
 
+def print_tree_condensed(level = 0, specs = spec_list):
+    for spec in specs:
+        if "description" in spec:
+            print "  "*level + spec["description"]
+        else:
+            print "  "*level + spec["name"].replace("_", " ")
+        if "tree" in spec:
+            print_tree_condensed(level+1, spec["tree"])
 
-def run_tests(specs = spec_list):
-    if type(specs) == list:
-        for spec in specs:
-            if spec["name"] == "spec":
-                run_test(spec)
-            elif "tree" in spec:
-                run_tests(spec["tree"])
 
-def run_test(spec):
-    if "description" in spec:
-        description = spec["description"]
-    else:
-        description = spec["name"]
-    try:
-        spec["func"]()
-        print("PASS: Test \"%s\"" % description)
-    except Exception as e:
-        print("FAIL: Test \"%s\"" % description)
-        print("\t %s" % e)
 
 
 
