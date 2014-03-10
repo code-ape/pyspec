@@ -1,15 +1,7 @@
-from pyspec import end, it
 
-
-class Burger():
-    def __init__(self, ketchup=False):
-        self.ketchup = ketchup
-
-    def apply_ketchup(self):
-        self.ketchup = True
-
-    def has_ketchup_on_it(self):
-        return self.ketchup
+import pyspec
+pyspec_import("burger")
+from burger import Burger
 
 
 def test_burger():
@@ -22,9 +14,9 @@ def test_burger():
             it("sets the ketchup flag to true")
             def spec():
                 assert burger.has_ketchup_on_it() == True 
-            end(spec)
+            end()
         
-        end(before)
+        end()
         
         def without_ketchup():
             def before():
@@ -33,13 +25,13 @@ def test_burger():
                 it("sets the ketchup flag to false")
                 def spec():
                     assert burger.has_ketchup_on_it() == False
-                end(spec)
+                end()
             
-            end(before)
-        end(without_ketchup)
+            end()
+        end()
     
-    end(apply_ketchup)
-end(test_burger)
+    end()
+end()
 
 
 
