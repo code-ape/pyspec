@@ -18,5 +18,5 @@ def run_test(spec):
         spec["func"]()
         result = ("PASS: Test \"%s\"" % description)
     except Exception as e:
-        result = ("FAIL: Test \"%s\"\n\t%s" % (description, e))
+        result = ("FAIL: Test \"%s\"\n\t%s" % (description, str(e)))
     return result

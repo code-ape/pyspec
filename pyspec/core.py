@@ -13,20 +13,16 @@ def end():
     last_frame = frames[1]
     base_locals = last_frame.f_locals
     test_funcs = clean(base_locals)
-    i = test_funcs.values()[0]
-    if i.__hash__() not in hash_registry: 
-        hash_registry.append(i.__hash__())
-        #i()
-    func = i   
-    name = i.__name__ 
+    fun = test_funcs.values()[0]
+    if fun.__hash__() not in hash_registry: 
+        hash_registry.append(fun.__hash__())
+    name = fun.__name__ 
     if len(call_stack) > 0:
         current_root = map_call_stack(spec_list)
     else:
         current_root = root_spec()
     call_stack.append(name)
     index = call_stack.index(name)
-
-
 
 
     current_tree = last_tree(current_root)
@@ -45,10 +41,10 @@ def end():
         else:
             new_spec = get_item(current_tree, "name",  name)
             new_spec["tree"] = []
-        func()
+        fun()
     else:
-        new_spec = get_item(current_tree, "name", name)
-        new_spec["func"] = func
+        new_spec = get_item_without_func(current_tree, "name", name)
+        new_spec["func"] = fun
 
     del call_stack[index] 
     if call_stack == []:
@@ -64,9 +60,16 @@ def clean(registered_locals):
             '__doc__', 'e', 'end', 'l', 'locals', 'it', 'pyspec_import']
     for name, val in registered_locals.items():
         if name not in avoid and inspect.isfunction(val):
-            return_dict[name] = val 
+            if val.__hash__() not in hash_registry:
+                return_dict[name] = val 
     return return_dict
 
+
+def get_item_without_func(list, key, value):
+    for i in list:
+        if key in i:
+            if i[key] == value and "func" not in i:
+                return i 
 
 def get_item(list, key, value):
     for i in list:
