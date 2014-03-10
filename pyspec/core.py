@@ -1,19 +1,17 @@
 
-
-from test_runner import run_tests
 import inspect
+from test_runner import run_tests
+from block import get_block_locals
 
 spec_list = []
 call_stack = []
 hash_registry = []
 
 def end():
-    stack = inspect.stack()
-    frames = [frame_obj[0] for frame_obj in stack]
-    last_frame = frames[1]
-    base_locals = last_frame.f_locals
+    base_locals = get_block_locals(1)
     test_funcs = clean(base_locals)
     fun = test_funcs.values()[0]
+    
     if fun.__hash__() not in hash_registry: 
         hash_registry.append(fun.__hash__())
     name = fun.__name__ 
@@ -53,7 +51,6 @@ def end():
         print("")
         run_tests(spec_list)
 
-
 def clean(registered_locals):
     return_dict = {}
     avoid = ['__builtins__', '__file__', '__package__', '__name__',
@@ -63,6 +60,7 @@ def clean(registered_locals):
             if val.__hash__() not in hash_registry:
                 return_dict[name] = val 
     return return_dict
+
 
 
 def get_item_without_func(list, key, value):
