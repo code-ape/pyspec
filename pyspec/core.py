@@ -61,7 +61,7 @@ def end():
 def clean(registered_locals):
     return_dict = {}
     avoid = ['__builtins__', '__file__', '__package__', '__name__',
-            '__doc__', 'e', 'end', 'l', 'locals', 'it']
+            '__doc__', 'e', 'end', 'l', 'locals', 'it', 'pyspec_import']
     for name, val in registered_locals.items():
         if name not in avoid and inspect.isfunction(val):
             return_dict[name] = val 
