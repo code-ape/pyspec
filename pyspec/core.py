@@ -2,29 +2,31 @@
 import inspect
 from test_runner import run_tests
 from block import get_block_locals
+from spec_tree import SpecTree
+
 
 spec_list = []
 call_stack = []
 hash_registry = []
 
+spec_tree = SpecTree()
+
+
 def end():
     base_locals = get_block_locals(1)
     test_funcs = clean(base_locals)
     fun = test_funcs.values()[0]
+    register_fun(fun)
     
-    if fun.__hash__() not in hash_registry: 
-        hash_registry.append(fun.__hash__())
     name = fun.__name__ 
-    if len(call_stack) > 0:
-        current_root = map_call_stack(spec_list)
-    else:
-        current_root = root_spec()
     call_stack.append(name)
     index = call_stack.index(name)
 
 
+    current_root = set_root()
     current_tree = last_tree(current_root)
     current_spec = last_spec(current_root) 
+    
     if current_spec:
         if "description" in current_spec and "name" not in current_spec:
             current_spec["name"] = name 
@@ -50,6 +52,20 @@ def end():
         print_tree_condensed()
         print("")
         run_tests(spec_list)
+
+def register_fun(fun):
+    if fun.__hash__() not in hash_registry: 
+        hash_registry.append(fun.__hash__())
+    else:
+        print("Error! Has already in hash registry")
+
+
+def set_root():
+    if len(call_stack) > 0:
+        return map_call_stack(spec_list)
+    else:
+        return root_spec()
+
 
 def clean(registered_locals):
     return_dict = {}
