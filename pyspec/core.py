@@ -1,19 +1,32 @@
 
 
 from test_runner import run_tests
+import inspect
 
 spec_list = []
-stack = []
+call_stack = []
+hash_registry = []
 
-def end(func):
-    name = func.__name__
-       
-    if len(stack) > 0:
-        current_root = map_stack(spec_list)
+def end():
+    stack = inspect.stack()
+    frames = [frame_obj[0] for frame_obj in stack]
+    last_frame = frames[1]
+    base_locals = last_frame.f_locals
+    test_funcs = clean(base_locals)
+    i = test_funcs.values()[0]
+    if i.__hash__() not in hash_registry: 
+        hash_registry.append(i.__hash__())
+        #i()
+    func = i   
+    name = i.__name__ 
+    if len(call_stack) > 0:
+        current_root = map_call_stack(spec_list)
     else:
         current_root = root_spec()
-    stack.append(name)
-    index = stack.index(name)
+    call_stack.append(name)
+    index = call_stack.index(name)
+
+
 
 
     current_tree = last_tree(current_root)
@@ -37,12 +50,23 @@ def end(func):
         new_spec = get_item(current_tree, "name", name)
         new_spec["func"] = func
 
-    del stack[index] 
-    if stack == []:
+    del call_stack[index] 
+    if call_stack == []:
         print("")
         print_tree_condensed()
         print("")
         run_tests(spec_list)
+
+
+def clean(registered_locals):
+    return_dict = {}
+    avoid = ['__builtins__', '__file__', '__package__', '__name__',
+            '__doc__', 'e', 'end', 'l', 'locals', 'it']
+    for name, val in registered_locals.items():
+        if name not in avoid and inspect.isfunction(val):
+            return_dict[name] = val 
+    return return_dict
+
 
 def get_item(list, key, value):
     for i in list:
@@ -94,13 +118,13 @@ def last_tree(current_root):
 
 
 
-def map_stack(specs, stack=stack):
+def map_call_stack(specs, call_stack=call_stack):
     right_spec = {}
     for spec in specs:
-        if spec["name"] == stack[0]:
+        if spec["name"] == call_stack[0]:
             right_spec = spec
-    if len(stack) > 1:
-        return map_stack(right_spec["tree"], stack[1:])
+    if len(call_stack) > 1:
+        return map_call_stack(right_spec["tree"], call_stack[1:])
     else:
         return right_spec
 
