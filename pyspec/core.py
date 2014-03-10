@@ -22,7 +22,6 @@ def end():
     call_stack.append(name)
     index = call_stack.index(name)
 
-
     current_root = set_root()
     current_tree = last_tree(current_root)
     current_spec = last_spec(current_root) 
@@ -47,17 +46,24 @@ def end():
         new_spec["func"] = fun
 
     del call_stack[index] 
-    if call_stack == []:
-        print("")
-        print_tree_condensed()
-        print("")
-        run_tests(spec_list)
+    print_tree_if_call_stack_empty()
+
+
+def it(description):
+    current_root = root_spec()
+    current_spec = last_spec(current_root) 
+    current_tree = last_tree(current_root)
+    if "description" in current_spec and "name" not in current_spec:
+        raise Exception("Tried to add mutliple descriptions")
+    else:
+        current_tree.append({"description": description})
+
 
 def register_fun(fun):
     if fun.__hash__() not in hash_registry: 
         hash_registry.append(fun.__hash__())
     else:
-        print("Error! Has already in hash registry")
+        print("Error! Function already in hash registry")
 
 
 def set_root():
@@ -65,6 +71,13 @@ def set_root():
         return map_call_stack(spec_list)
     else:
         return root_spec()
+
+def print_tree_if_call_stack_empty():
+    if call_stack == []:
+        print("")
+        print_tree_condensed()
+        print("")
+        run_tests(spec_list)
 
 
 def clean(registered_locals):
@@ -91,14 +104,6 @@ def get_item(list, key, value):
             if i[key] == value:
                 return i 
 
-def it(description):
-    current_root = root_spec()
-    current_spec = last_spec(current_root) 
-    current_tree = last_tree(current_root)
-    if "description" in current_spec and "name" not in current_spec:
-        raise Exception("Tried to add mutliple descriptions")
-    else:
-        current_tree.append({"description": description})
 
 
 def root_spec(specs = spec_list):
